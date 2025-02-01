@@ -1,101 +1,72 @@
-import Image from "next/image";
+"use client";
+
+import StatsOverview from "@/components/ui/StatsOverview";
+import LoanRecordTable from "@/components/ui/LoanRecordTable";
+import NotificationCard from "@/components/ui/NotificationCard";
+import StatisticLineCart from "@/components/ui/StatisticLineCart";
+import Header from "@/components/layouts/Header";
+import { useAuth } from "@/context/AuthContext";
+import WaitApprovalCard from "@/components/ui/WaitApprovalCard";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const { user } = useAuth();
+  const cardItems = [
+    { icon: "/ic_peminjam.svg", title: "DATA PEMINJAM", value: 24 },
+    { icon: "/ic_ruang.svg", title: "DATA RUANG", value: 10 },
+    { icon: "/ic_ruang_terpakai.svg", title: "RUANG TERPAKAI", value: 4 },
+  ];
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+  return (
+    <>
+      <section className="flex flex-col gap-10 bg-gradient-to-r pl-[25%] from-[#FAF9F9] to-[#EAF6F6] w-full min-h-screen z-10 p-16">
+        <Header namePage="DASHBOARD" name={user?.name || "Guest"} />
+
+        <section className="flex gap-14 justify-center">
+          {cardItems.map((item, index) => (
+            <StatsOverview
+              key={index}
+              icon={item.icon}
+              title={item.title}
+              value={item.value}
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+          ))}
+        </section>
+        {user?.role === "admin" ? (
+          <>
+            <StatisticLineCart />
+            <div className="flex justify-between">
+              <div className="flex flex-col gap-10">
+                <LoanRecordTable />
+                <LoanRecordTable />
+              </div>
+
+              <div className="bg-[#8BBBB8] h-full w-fit rounded-xl flex flex-col items-center py-4 px-6 shadow-[0px_7px_5px_rgba(0,0,0,0.3)]">
+                <h1 className="w-[180px] text-center mb-5 font-bold">
+                  REQUEST APPROVAL PEMINJAMAN
+                </h1>
+                <NotificationCard
+                  peminjam="Abdul Khohir"
+                  barang="Camera Sony"
+                />
+              </div>
+            </div>
+          </>
+        ) : (
+          <div className="flex flex-col gap-16 items-center">
+            <WaitApprovalCard />
+            <div className="flex flex-col gap-14 text-[#248A81] font-semibold">
+              <div className="flex flex-col gap-3">
+                <h1>Barang Yang Dipinjam</h1>
+                <LoanRecordTable />
+              </div>
+              <div className="flex flex-col gap-3">
+                <h1>Ruang yang Akan Digunakan</h1>
+                <LoanRecordTable />
+              </div>
+            </div>
+          </div>
+        )}
+      </section>
+    </>
   );
 }
